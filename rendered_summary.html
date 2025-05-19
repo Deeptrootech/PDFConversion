@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+  <title>Download Summary</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Open Sans", sans-serif;
+    }
+    @page {
+        size: A4;
+        margin: 60px 40px;
+    }
+
+    @print {
+      body {
+        margin: 10px 0;
+        padding: 20px;
+      }
+
+      .header {
+        padding-bottom: 16px;
+        border-bottom: 1px solid #898B94;
+      }
+
+      .footer {
+        border-top: 1px solid #898B94;
+      }
+    }
+
+    .header {
+      width: 100%;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #898B94;
+    }
+
+    body {
+      background-color: #FFFFFF;
+      color: #333;
+      padding: 20px;
+      min-height: 100dvh;
+    }
+
+    .footer {
+      border-top: 1px solid #898B94;
+      padding-top: 10px;
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 1.4;
+      text-align: right;
+      color: #11101B;
+    }
+
+    .heding {
+      padding: 10px 0;
+      border-bottom: 1px solid #898B94;
+    }
+
+    .heding h1 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #11101B;
+      margin-bottom: 4px;
+    }
+
+    .heding p {
+      color: #898B94;
+      font-size: 10px;
+      font-weight: 500;
+    }
+
+    .body {
+      padding: 24px 0;
+    }
+
+    .body p {
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 140%;
+    }
+
+    .card-caption {
+      margin-bottom: 13px;
+      color: #222222;
+    }
+
+    .card-caption:first-child {
+      margin-top: 0;
+    }
+
+    /* file-box */
+
+    .file-box {
+      border: 1px solid #DADAE1;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 16px;
+    }
+
+    .file-box .file-box-head {
+      font-weight: 500;
+      font-size: 10px;
+      line-height: 1.4;
+      padding: 10px 12px;
+      background: #F5F5F5;
+    }
+
+    .file-box .file-box-body {
+      padding: 12px 0;
+    }
+
+    .file-box .file-box-body .file-box-text {
+      padding: 0 16px;
+    }
+
+    .file-box .file-box-body img {
+      width: 100%;
+      height: auto;
+      max-height: 200px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .file-box .file-box-body table {
+      display: table;
+      text-align: left;
+      width: 100%;
+      border-collapse: collapse;
+      padding: 12px 0;
+    }
+
+    .file-box .file-box-body p {
+      margin-top: 13px;
+      margin-bottom: 0;
+    }
+
+    .file-box .file-box-body p:first-child {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+
+    .file-box .file-box-body table tr th,
+    .file-box .file-box-body table tr td {
+      padding: 8px;
+    }
+
+    .file-box .file-box-body table thead tr {
+      background-color: #DADAE1;
+    }
+
+    .file-box .file-box-body table tbody tr td,
+    .file-box .file-box-body table thead tr th {
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 140%;
+      letter-spacing: 0%;
+      color: #596783;
+    }
+
+    .file-box .file-box-body table tbody tr td {
+      color: #001540;
+      border-bottom: 1px solid #F0F1F4
+    }
+
+    .card-link{
+      background-color: #DADAE1;
+      padding: 8px 10px;
+      border-radius: 12px;
+    }
+
+    /* for summary in pdf */
+    h1, h2, h3 {
+        color: #222222;
+        margin-top: 1em;
+        margin-bottom: 0.5em;
+    }
+    ul {
+        margin: 1em 0;
+        padding-left: 1.2em;
+        font-size: 12px;
+    }
+    li {
+        margin-bottom: 0.6em;
+        font-size: 12px;
+    }
+    p {
+        font-size: 12px;
+        margin-bottom: 1em;
+    }
+    .card-caption {
+      margin-bottom: 13px;
+      color: #222222;
+      font-size: 12px;
+    }
+    .card-caption:first-child {
+      margin-top: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="header">
+    <div>
+      <img src="http://127.0.0.1:8001/static/images/Logo.svg" alt="img">
+    </div>
+  </header>
+  <section class="heding">
+    <div>
+      <h1>My Organization Name</h1>
+      <p>Summary Generated On : <span>05-16-2025</span></p>
+    </div>
+  </section>
+  <section class="body">
+    <p class="card-caption">
+        <p><strong>Court-Ready Report: Summary of Interactions</strong></p>
+<p><strong>1. SYNOPSIS:</strong><br />
+On March 1, 2025, a signature was captured in an image, characterized by a stylized blue ink signature on textured paper. The signature, which combines cursive and print elements, suggests a confident and individualistic style, likely intended for a formal document or agreement. There are no noted conflicts or deviations from prior agreements in this interaction, indicating a straightforward exchange between the involved parties.</p>
+<p><strong>2. WHAT THIS PROVES:</strong><br />
+The interactions demonstrate the significance of visual documentation in formal agreements, particularly in co-parenting or collaborative arrangements. The signature serves as a symbol of authenticity and individual expression, highlighting the necessity for clear communication and mutual understanding in legal or personal matters. The execution of the signature indicates compliance and a willingness to engage in cooperative dialogue.</p>
+<p><strong>3. AI-ASSISTED PATTERN RECOGNITION:</strong><br />
+The fluidity and confidence of the signature may reflect a pattern of assertiveness in the individual’s approach to agreements. The blend of cursive and print elements suggests an intention to balance personal identity with formal obligations, indicating a nuanced communication style that may facilitate effective collaboration.</p>
+<p><strong>4. AI-GENERATED RESPONSE SUGGESTION:</strong><br />
+To promote clarity and enhance communication in future interactions, a neutral response could be: "Thank you for providing your signature on the document. Please confirm if all terms are agreeable so we can proceed smoothly." This response encourages collaboration and reinforces the importance of mutual agreement in ongoing discussions.</p>
+    </p>
+  </section>
+  
+</body>
+
+</html>
