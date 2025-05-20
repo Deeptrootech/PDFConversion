@@ -4,7 +4,9 @@ djangorestframework==3.16.0
 markdown==3.8 # used for formatting summary
 weasyprint==65.1  # convert HTML to PDF # libpango-1.0-0 should be installed in os
 pandas==2.2.3
+xlrd==2.0.1 # to read excel
 PyPDF2==3.0.1 # merge pdfs
 reportlab==4.4.1 # to edit existing pdfs using canvas
 pillow-heif==0.22.0 # to support heic/heif image
 cairosvg==2.8.2 # to convert svg to png
+odfpy==1.4.1 # to read ods, odt files

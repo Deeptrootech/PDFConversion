@@ -10,7 +10,7 @@ from datetime import datetime
 from django.template.loader import render_to_string
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.views import APIView
-from ConversionApp.pdf_merger import merge_pdfs
+from ConversionApp.pdf_merger import PDFMerger
 from ConversionApp.converters import LocalFileToPdfConverter
 from ConversionApp.utils import get_file_path
 
@@ -24,6 +24,7 @@ class ConvertAndMergeView(APIView):
         # from below file stored in memory or at disc's temp folder based on size
         files = request.FILES.getlist("documents")
         raw_text = request.data.get("text_content", "").strip()
+        whitelabled_client_name = request.data.get("whitelabled_client_name", "").strip()
         # ***** Step 1: *****
         # (1st page of final PDF) If provided then This will be the first page of final pdf.
         if raw_text:
@@ -32,7 +33,7 @@ class ConvertAndMergeView(APIView):
             # Step (ii): Render HTML context and Generate HTML string.
             # In case If you want to set specific structure of "raw_text pdf".
             html_string = render_to_string("document_summary_template.html", {
-                'document_title': "My Organization Name",
+                'document_title': "My Organization Name", # TODO: dynamic
                 'summary_generated_date': datetime.now().strftime('%m-%d-%Y'),
                 'summary': formatted_summary,
                 'static_url_domain': settings.S3_URL if settings.USE_S3 else settings.BACKEND_URL,
@@ -66,7 +67,8 @@ class ConvertAndMergeView(APIView):
                 stored_pdfs.append(doc_pdf_memory)  # all PDF file as bytesIo, added in stored_pdfs list.
 
             # Step 3: Merge all PDFs
-            merged_pdf = merge_pdfs(stored_pdfs)  # return as BytesIO of merged PDF.
+            pdf_generator = PDFMerger(client_company_name=whitelabled_client_name)
+            merged_pdf = pdf_generator.merge_pdfs(stored_pdfs)  # return as BytesIO of merged PDF.
             response = HttpResponse(merged_pdf, content_type='application/pdf')
             response['Content-Disposition'] = f'attachment; filename="merged_output.pdf"'
             return response
