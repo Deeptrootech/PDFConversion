@@ -19,6 +19,7 @@ from ConversionApp.utils import get_file_path
 
 
 class ConvertAndMergeView(APIView):
+    # TODO: Need to add some backgroud task to delete temp files after gerenaretd summary pdf.
     parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):

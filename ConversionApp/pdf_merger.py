@@ -18,6 +18,7 @@ class PDFMerger:
         Initialize PDF generator with dynamic data from the database
 
         Note: Mapping of page height and width starts from bottom-left corner of the page.
+              All size are in pt (points)
         """
         # Fetch white-label configuration dynamically
         config = get_object_or_404(WhiteLabelConfig, client_company_name=client_company_name)
@@ -25,22 +26,37 @@ class PDFMerger:
         self.company_name = config.client_company_name
         self.logo_path = config.logo.path if config.logo else 'static/images/Logo.svg'
 
-        self.page_width, self.page_height = A4
+        # Dynamic page width set using setter method
+        # Good Use of setter here...: (Debug why used setter method instead of directly assigning)
+        self._page_width, self.page_height = A4
+        self.footer_width = self._page_width
+        self.footer_white_rectangle_width = self.footer_width
+        self.header_width = self._page_width
+        self.header_white_rectangle_width = self.header_width
+
         # Dynamic footer and header height and width
         self.footer_height = config.page_footer_height  # Default 20
-        self.footer_width = self.page_width
         self.footer_white_rectangle_height = self.footer_height
-        self.footer_white_rectangle_width = self.footer_width
         self.header_height = config.page_header_height  # Default 35
-        self.header_width = self.page_width
         self.header_white_rectangle_height = self.header_height
-        self.header_white_rectangle_width = self.header_width
 
         self.page_header_footer_left_width_margin = config.header_footer_left_width_margin  # Default 20
         self.page_header_footer_right_width_margin = config.header_footer_right_width_margin  # Default 20
         # Dynamic Logo height and width
         self.logo_height = self.header_height
         self.logo_width = 80
+
+    @property
+    def page_width(self):
+        return self._page_width
+
+    @page_width.setter
+    def page_width(self, value):
+        self._page_width = value
+        self.footer_width = self._page_width
+        self.footer_white_rectangle_width = self.footer_width
+        self.header_width = self._page_width
+        self.header_white_rectangle_width = self.header_width
 
     def create_header_page(self, source) -> io.BytesIO:
         """
@@ -101,12 +117,13 @@ class PDFMerger:
         c.setFillColor(HexColor("#808080"))
 
         # Draw footer: Company name at bottom-left
-        c.drawString(self.page_header_footer_left_width_margin, self.footer_height, self.company_name)
+        c.drawString(self.page_header_footer_left_width_margin, self.footer_height - 20, self.company_name)
 
         # Draw footer: Page numbering at bottom-left
         pagination_text = f"Page {current_page} of {all_pages_length}"
         text_width = c.stringWidth(pagination_text)
-        c.drawString(self.footer_width - text_width - self.page_header_footer_right_width_margin, self.footer_height,
+        c.drawString(self.footer_width - text_width - self.page_header_footer_right_width_margin,
+                     self.footer_height - 20,
                      pagination_text)
 
         c.save()
@@ -135,17 +152,17 @@ class PDFMerger:
     #     return buffer
     #
     #
-    def remove_content_from_left_bottom(self) -> io.BytesIO:
+    def remove_existing_content_from_header_footer(self) -> io.BytesIO:
         """
-        here, I have added a rectangle left bottom corner of the PDF.
-        To hide its pagination.
+        here, I have added a rectangle at top & bottom of the PDF.
+        To hide its Exsting data inplace of header and footer.
 
-        (Note: It's Not necessary that all pdfs hase pagination in left-bottom corner)
+        (Note: It's Not necessary that all pdfs has pagination in right-bottom corner)
         """
         buffer = io.BytesIO()
         c = canvas.Canvas(buffer, pagesize=(self.page_width, self.page_height))
         c.setFillColorRGB(1, 1, 1)  # White color
-        c.rect(0, self.footer_height, self.footer_white_rectangle_width,
+        c.rect(0, 0, self.footer_white_rectangle_width,
                self.footer_white_rectangle_height,
                fill=True, stroke=False)
         c.rect(0, self.page_height - self.header_height, self.header_white_rectangle_width,
@@ -200,7 +217,7 @@ class PDFMerger:
             resized_page.merge_page(page)
 
             # Step 2b: Remove old footer (overlay white)
-            white_overlay_pdf = PdfReader(self.remove_content_from_left_bottom())
+            white_overlay_pdf = PdfReader(self.remove_existing_content_from_header_footer())
             resized_page.merge_page(white_overlay_pdf.pages[0])
 
             # Step 2c: Add new footer (overlay text)
