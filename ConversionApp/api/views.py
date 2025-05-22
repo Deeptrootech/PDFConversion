@@ -4,12 +4,15 @@ import os
 import markdown
 from django.conf import settings
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from weasyprint import HTML
 from datetime import datetime
 from django.template.loader import render_to_string
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.views import APIView
+
+from ConversionApp.models import WhiteLabelConfig
 from ConversionApp.pdf_merger import PDFMerger
 from ConversionApp.converters import LocalFileToPdfConverter
 from ConversionApp.utils import get_file_path
@@ -24,7 +27,11 @@ class ConvertAndMergeView(APIView):
         # from below file stored in memory or at disc's temp folder based on size
         files = request.FILES.getlist("documents")
         raw_text = request.data.get("text_content", "").strip()
+
         whitelabled_client_name = request.data.get("whitelabled_client_name", "").strip()
+        whitelabelconfig_obj = get_object_or_404(WhiteLabelConfig, client_company_name=whitelabled_client_name)
+        logo_path = whitelabelconfig_obj.logo.url if whitelabelconfig_obj.logo else 'static/images/Logo.svg'
+
         # ***** Step 1: *****
         # (1st page of final PDF) If provided then This will be the first page of final pdf.
         if raw_text:
@@ -33,10 +40,11 @@ class ConvertAndMergeView(APIView):
             # Step (ii): Render HTML context and Generate HTML string.
             # In case If you want to set specific structure of "raw_text pdf".
             html_string = render_to_string("document_summary_template.html", {
-                'document_title': "My Organization Name", # TODO: dynamic
+                'document_title': whitelabled_client_name,
                 'summary_generated_date': datetime.now().strftime('%m-%d-%Y'),
                 'summary': formatted_summary,
                 'static_url_domain': settings.S3_URL if settings.USE_S3 else settings.BACKEND_URL,
+                'logo_path': logo_path,
             })
             # Step (iii): Create in-memory PDF
             summary_pdf_memory = io.BytesIO()
@@ -44,7 +52,7 @@ class ConvertAndMergeView(APIView):
             summary_pdf_memory.seek(0)
 
             # Step (iv): append to list
-            stored_pdfs.append(summary_pdf_memory)
+            stored_pdfs.append(("None", summary_pdf_memory))
 
         # ***** Step 2: get all uploaded files and append to list. *****
         try:
@@ -64,7 +72,9 @@ class ConvertAndMergeView(APIView):
                 except ValueError as e:
                     return Response([str(e)], status=400)
                 doc_pdf_memory.seek(0)
-                stored_pdfs.append(doc_pdf_memory)  # all PDF file as bytesIo, added in stored_pdfs list.
+
+                # all PDF file as bytesIo with uploaded filename, added in stored_pdfs list.
+                stored_pdfs.append((file.name, doc_pdf_memory))
 
             # Step 3: Merge all PDFs
             pdf_generator = PDFMerger(client_company_name=whitelabled_client_name)
